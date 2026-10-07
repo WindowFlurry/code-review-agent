@@ -1,0 +1,38 @@
+# ---- secrets: never commit ----
+.env
+.env.local
+
+# ---- virtualenv ----
+.venv/
+venv/
+env/
+
+# ---- run artifacts ----
+runs/
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+
+# ---- python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ---- editors / OS ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---- Office 临时锁文件 ----
+# 打开 PPT/Word/Excel 时会产生一个 ~$ 开头的隐藏文件，文件被占用时
+# git 无法读取它，会导致整个 git add 失败。
+~$*
