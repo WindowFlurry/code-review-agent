@@ -318,6 +318,40 @@ def review(
 
 
 @app.command()
+def sample(
+    out: Annotated[Path | None, typer.Option(help="输出目录。")] = None,
+    quiet: Annotated[bool, typer.Option("-q", "--quiet", help="只打印报告。")] = False,
+) -> None:
+    """跑一遍自带的示例代码，看看效果。
+
+    单独做成一个子命令，是为了让 .bat 里可以完全不写中文——中文路径在
+    批处理里只能靠 GBK 编码，那样在 GitHub 网页上就是乱码。
+    """
+    from .runner import run_review
+
+    console.print("[bold]代码审查助手[/bold]  [dim]示例演示[/dim]")
+    console.print("正在检查自带的 `示例代码` 文件夹——里面是故意写错的代码，用来看效果。")
+    console.print("[dim]大约 10~30 秒，会用到 AI。[/dim]
+")
+
+    try:
+        run_review(
+            target=Path("示例代码"),
+            mode="graph",
+            thread_id="sample",
+            out_dir=out or Path("runs") / "示例代码演示",
+            formats=["console", "md", "json"],
+            offline=False,
+            quiet=quiet,
+            verbose=False,
+        )
+    except CodeReviewError as exc:
+        _fail(str(exc))
+
+    console.print("[dim]文字报告：runs\示例代码演示\report.md[/dim]")
+
+
+@app.command()
 def ask(
     question: Annotated[str | None, typer.Argument(help="Question; omit for a REPL.")] = None,
     thread: Annotated[str, typer.Option(help="Thread id of a previous review.")] = "default",
