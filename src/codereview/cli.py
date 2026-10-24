@@ -331,8 +331,8 @@ def sample(
 
     console.print("[bold]代码审查助手[/bold]  [dim]示例演示[/dim]")
     console.print("正在检查自带的 `示例代码` 文件夹——里面是故意写错的代码，用来看效果。")
-    console.print("[dim]大约 10~30 秒，会用到 AI。[/dim]
-")
+    console.print("[dim]大约 10~30 秒，会用到 AI。[/dim]")
+    console.print()
 
     try:
         run_review(

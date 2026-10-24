@@ -1,10 +1,13 @@
-"""Entry point: fix the console encoding, then hand over to the CLI.
+"""Entry point: make printing safe, then hand over to the CLI.
 
-This has to happen before anything else imports or prints. A Windows console
-defaults to GBK (cp936), and the first box-drawing character from ``rich``, or
-the first emoji from a model's output, raises ``UnicodeEncodeError`` and kills
-the run. Redirecting is not enough -- ``PYTHONIOENCODING`` is not always set by
-the time a package is imported, so the streams are reconfigured directly.
+The stream **encoding is deliberately left alone**. Python already asks Windows
+for the console code page, and that is the encoding the console actually
+renders. Forcing UTF-8 here (as an earlier version did) is only correct when
+the .bat has switched the console to codepage 65001; on a standard Chinese
+Windows console it turns every Chinese character into 乱码.
+
+Only the error handler is changed, so an emoji or a box-drawing character can
+never kill the run.
 """
 
 from __future__ import annotations
@@ -13,18 +16,18 @@ import contextlib
 import sys
 
 
-def _force_utf8() -> None:
+def _harden_streams() -> None:
     for stream in (sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
         if reconfigure is not None:
             # Detached or already-wrapped streams raise here; there is nothing
             # useful to do about it, and failing would abort the whole command.
             with contextlib.suppress(ValueError, OSError):
-                reconfigure(encoding="utf-8", errors="replace")
+                reconfigure(errors="replace")
 
 
 def main() -> None:
-    _force_utf8()
+    _harden_streams()
 
     from .cli import app
 
